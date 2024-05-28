@@ -104,7 +104,7 @@ def main():
             path = input("Enter the path to the key file: ")
             master_password = input("Enter the master password: ")
             manager.read_key(path, master_password)
-                elif option == "3":
+        elif option == "3":
             path = input("Enter the path to the password file: ")
             manager.initialize_password_file(path)
         elif option == "4":
