@@ -6,6 +6,7 @@ Secure_Password_Manager is a secure password manager implemented in Python. It p
 ## Requirements
 - Python 3.x
 - cryptography library (`pip install cryptography`)
+- pyperclip
 
 ## Installation
 1. Clone the repository:
