@@ -11,7 +11,7 @@ Secure_Password_Manager is a secure password manager implemented in Python. It p
 ## Installation
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/yourrepository.git
+   git clone https://github.com/n1motv/secure_password_manager
    ```
 2. Install dependencies:
    ```
@@ -19,7 +19,7 @@ Secure_Password_Manager is a secure password manager implemented in Python. It p
    ```
 3. Run the main script:
    ```
-   python main.py
+   python secure_pass_manager.py
    ```
 
 ## Usage
