@@ -26,7 +26,7 @@ Secure_Password_Manager is a secure password manager implemented in Python. It p
 To use Secure_Password_Manager, follow these steps:
 1. Run the main script:
    ```
-   python main.py
+   python secure_pass_manager.py
    ```
 2. Choose an option from the menu:
    - (1) Generate a new key
