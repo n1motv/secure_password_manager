@@ -1,6 +1,22 @@
 from cryptography.fernet import Fernet
-from hashlib import pbkdf2_hmac
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+import base64
 import os
+import pyperclip
+
+
+def _derive_key(master_password, salt):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+        backend=default_backend()
+    )
+    return base64.urlsafe_b64encode(kdf.derive(master_password.encode()))
+
 
 class SecurePasswordManager:
     def __init__(self):
@@ -8,34 +24,37 @@ class SecurePasswordManager:
         self.credentials_file = None
         self.credentials_dict = {}
 
-    def _derive_key(self, master_password, salt):
-        return pbkdf2_hmac('sha256', master_password.encode(), salt, 100000)
-
     def generate_key(self, file_path, master_password):
         try:
+            self.encryption_key = Fernet.generate_key()
             salt = os.urandom(16)
-            self.encryption_key = self._derive_key(master_password, salt)
+            derived_key = _derive_key(master_password, salt)
+            fernet = Fernet(derived_key)
+            encrypted_key = fernet.encrypt(self.encryption_key)
             with open(file_path, "wb") as key_file:
-                key_file.write(salt + self.encryption_key)
+                key_file.write(salt + encrypted_key)
             print("Key generated and saved successfully.")
+            return True
         except Exception as e:
             print(f"An error occurred while generating the key: {e}")
+            return False
 
     def read_key(self, file_path, master_password):
         try:
             with open(file_path, "rb") as key_file:
-                salt = key_file.read(16)
-                stored_encryption_key = key_file.read()
-            derived_key = self._derive_key(master_password, salt)
-            if derived_key == stored_encryption_key:
-                self.encryption_key = derived_key
-                print("Key read successfully.")
-            else:
-                print("Incorrect master password.")
+                data = key_file.read()
+            salt, encrypted_key = data[:16], data[16:]
+            derived_key = _derive_key(master_password, salt)
+            fernet = Fernet(derived_key)
+            self.encryption_key = fernet.decrypt(encrypted_key)
+            print("Key read successfully.")
+            return True
         except FileNotFoundError:
             print("The key file does not exist.")
+            return False
         except Exception as e:
             print(f"An error occurred while reading the key: {e}")
+            return False
 
     def initialize_password_file(self, file_path, initial_data=None):
         try:
@@ -53,7 +72,8 @@ class SecurePasswordManager:
             with open(file_path, "r") as file:
                 for line in file:
                     site, encrypted_password = line.strip().split(":")
-                    self.credentials_dict[site] = Fernet(self.encryption_key).decrypt(encrypted_password.encode()).decode()
+                    self.credentials_dict[site] = Fernet(self.encryption_key).decrypt(
+                        encrypted_password.encode()).decode()
             print("Password file read successfully.")
         except FileNotFoundError:
             print("The password file does not exist.")
@@ -93,22 +113,22 @@ def main():
     (q) Exit program
     """)
 
-    running = True
-    while running:
+    running = False
+    while not running:
         option = input("Enter your choice: ")
         if option == "1":
-            path = input("Enter the path to save the key: ")
-            master_password = input("Enter a master password: ")
+            path = input("Enter the path: ")
+            master_password = input("Enter master password: ")
             manager.generate_key(path, master_password)
         elif option == "2":
-            path = input("Enter the path to the key file: ")
-            master_password = input("Enter the master password: ")
+            path = input("Enter the path: ")
+            master_password = input("Enter master password: ")
             manager.read_key(path, master_password)
         elif option == "3":
-            path = input("Enter the path to the password file: ")
+            path = input("Enter the path: ")
             manager.initialize_password_file(path)
         elif option == "4":
-            path = input("Enter the path to the password file: ")
+            path = input("Enter the path: ")
             manager.read_password_file(path)
         elif option == "5":
             site = input("Enter the site: ")
@@ -119,11 +139,15 @@ def main():
             password = manager.retrieve_password(site)
             if password:
                 print(f"Password for {site} is {password}")
+                answer = input("Do you want to copy it to the clipboard ? (y/n)")
+                if answer == "y":
+                    pyperclip.copy(password)
         elif option == "q":
-            running = False
+            running = True
             print("Thank you!")
         else:
             print("Invalid choice")
+
 
 if __name__ == "__main__":
     main()
