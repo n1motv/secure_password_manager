@@ -1,7 +1,7 @@
-# SecurePythonPasswordManager
+# Secure_Password_Manager
 
 ## Description
-SecurePythonPasswordManager is a secure password manager implemented in Python. It provides functionality for generating and storing passwords encrypted with a master password. Users can manage their passwords securely using this tool.
+Secure_Password_Manager is a secure password manager implemented in Python. It provides functionality for generating and storing passwords encrypted with a master password. Users can manage their passwords securely using this tool.
 
 ## Requirements
 - Python 3.x
@@ -22,7 +22,7 @@ SecurePythonPasswordManager is a secure password manager implemented in Python. 
    ```
 
 ## Usage
-To use SecurePythonPasswordManager, follow these steps:
+To use Secure_Password_Manager, follow these steps:
 1. Run the main script:
    ```
    python main.py
@@ -44,6 +44,4 @@ If you'd like to contribute to this project, please follow these guidelines:
 - Push to the branch: `git push origin feature/new-feature`
 - Submit a pull request
 
-## License
-This project is licensed under the [MIT License](LICENSE).
 
