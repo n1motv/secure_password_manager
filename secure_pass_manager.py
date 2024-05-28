@@ -104,7 +104,21 @@ def main():
             path = input("Enter the path to the key file: ")
             master_password = input("Enter the master password: ")
             manager.read_key(path, master_password)
-        # Implement other options...
+                elif option == "3":
+            path = input("Enter the path to the password file: ")
+            manager.initialize_password_file(path)
+        elif option == "4":
+            path = input("Enter the path to the password file: ")
+            manager.read_password_file(path)
+        elif option == "5":
+            site = input("Enter the site: ")
+            password = input("Enter the password: ")
+            manager.store_password(site, password)
+        elif option == "6":
+            site = input("What site do you want to retrieve? ")
+            password = manager.retrieve_password(site)
+            if password:
+                print(f"Password for {site} is {password}")
         elif option == "q":
             running = False
             print("Thank you!")
